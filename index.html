@@ -1,235 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sami@portfolio:~$</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0d1117;
-            color: #ffd700;
-            min-height: 100vh;
-            padding: 20px;
-            font-size: 14px;
-        }
-
-        .terminal {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #161b22;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .terminal-header {
-            background: #21262d;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .terminal-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .terminal-button.close { background: #ff5f56; }
-        .terminal-button.minimize { background: #ffbd2e; }
-        .terminal-button.maximize { background: #27ca3f; }
-
-        .terminal-title {
-            color: #ffd700;
-            font-size: 12px;
-            margin-left: 12px;
-        }
-
-        .terminal-content {
-            padding: 20px;
-            background: #0d1117;
-        }
-
-        .command-output {
-            margin: 10px 0;
-        }
-
-        .bio-section {
-            margin: 20px 0;
-            padding: 15px;
-            background: #21262d;
-            border-left: 4px solid #ffd700;
-        }
-
-        .command-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .command-item {
-            background: #21262d;
-            border: 1px solid #30363d;
-            padding: 15px;
-            text-decoration: none;
-            color: #ffd700;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .command-item:hover {
-            border-color: #ffd700;
-            background: #1c2128;
-        }
-
-        .command-name {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .command-text {
-            font-weight: 500;
-        }
-
-        .command-description {
-            font-size: 12px;
-            margin-left: 30px;
-            opacity: 0.8;
-        }
-
-        .typing-animation {
-            border-right: 2px solid #ffd700;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { border-color: #ffd700; }
-            51%, 100% { border-color: transparent; }
-        }
-
-        @media (max-width: 768px) {
-            .command-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sam Sultan · Local AI Lab</title>
+<meta name="description" content="Sam Sultan — infrastructure and operations analyst in Sydney, measuring local AI on AMD Radeon AI PRO R9700 hardware.">
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --raised: #21262d;
+    --line: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --gold: #ffd700;
+    --green: #3fb950;
+    --blue: #79c0ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, "Courier New", monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover, a:focus-visible { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .terminal {
+    max-width: 860px;
+    margin: 0 auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .bar {
+    background: var(--raised);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27ca3f; }
+  .bar-title { color: var(--muted); font-size: 12px; margin-left: 10px; }
+  .content { padding: 22px 22px 28px; }
+  .prompt { color: var(--gold); margin-top: 22px; }
+  .prompt:first-child { margin-top: 0; }
+  .prompt .u { color: var(--green); }
+  .out { margin: 8px 0 0 0; }
+  h1 { font-size: 22px; color: var(--text); font-weight: 700; margin-bottom: 2px; }
+  .role { color: var(--muted); }
+  .bio {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: var(--raised);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .stat {
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .stat .n { font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1.2; }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  ul.ls { list-style: none; margin-top: 8px; }
+  ul.ls li { padding: 8px 0; border-bottom: 1px dashed var(--line); display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+  ul.ls li:last-child { border-bottom: 0; }
+  .desc { color: var(--muted); font-size: 13px; display: block; }
+  .tag { color: var(--green); }
+  .cursor { display: inline-block; width: 8px; height: 16px; background: var(--gold); vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+  footer { max-width: 860px; margin: 14px auto 0; color: var(--muted); font-size: 12px; text-align: center; }
+  @media (max-width: 560px) {
+    body { padding: 12px 10px 32px; font-size: 13px; }
+    .content { padding: 16px 14px 22px; }
+    h1 { font-size: 19px; }
+  }
+</style>
 </head>
 <body>
-    <div class="terminal">
-        <div class="terminal-header">
-            <div class="terminal-buttons">
-                <div class="terminal-button close"></div>
-                <div class="terminal-button minimize"></div>
-                <div class="terminal-button maximize"></div>
-            </div>
-            <div class="terminal-title">sami@portfolio: ~</div>
-        </div>
-        
-        <div class="terminal-content">
-            <div class="command-output">
-                sami@portfolio:~$ whoami
-            </div>
+<main class="terminal">
+  <div class="bar" aria-hidden="true">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="bar-title">sam@lab: ~</span>
+  </div>
+  <div class="content">
 
-            <div class="bio-section">
-                <div><strong>Professional Tinkerer & Content Creator</strong></div>
-                <div style="margin-top: 8px;">
-                    Passionate about bringing my ideas to life,from the physical world of atoms to the digital world of bits.
-                    sharing what I've learned is something i'm truly passionate about.
-                </div>
-            </div>
-
-            <div class="command-output">
-                sami@portfolio:~$ ls -la
-            </div>
-
-            <div class="command-grid">
-                <a href="#" class="command-item">
-                    <div class="command-name">
-                        <span>📁</span>
-                        <span class="command-text">./projects</span>
-                    </div>
-                    <div class="command-description">Browse my coding projects</div>
-                </a>
-
-                <a href="https://github.com/getsamsultan" class="command-item">
-                    <div class="command-name">
-                        <span>🔧</span>
-                        <span class="command-text">github</span>
-                    </div>
-                    <div class="command-description">View my GitHub profile</div>
-                </a>
-
-                <a href="#" class="command-item">
-                    <div class="command-name">
-                        <span>🎥</span>
-                        <span class="command-text">youtube</span>
-                    </div>
-                    <div class="command-description">Check out my tutorials</div>
-                </a>
-
-                <a href="https://x.com/sultanminutes" class="command-item">
-                    <div class="command-name">
-                        <span>❌</span>
-                        <span class="command-text">x</span>
-                    </div>
-                    <div class="command-description">Follow me on X</div>
-                </a>
-
-                <a href="#" class="command-item">
-                    <div class="command-name">
-                        <span>🎤</span>
-                        <span class="command-text">./talks</span>
-                    </div>
-                    <div class="command-description">View my presentations</div>
-                </a>
-
-                <a href="#" class="command-item">
-                    <div class="command-name">
-                        <span>📰</span>
-                        <span class="command-text">press</span>
-                    </div>
-                    <div class="command-description">Media coverage</div>
-                </a>
-            </div>
-
-            <div class="command-output">
-                sami@portfolio:~$ <span class="typing-animation"></span>
-            </div>
-        </div>
+    <p class="prompt"><span class="u">sam@lab</span>:~$ whoami</p>
+    <div class="out">
+      <h1>Sam Sultan</h1>
+      <p class="role">Infrastructure &amp; Operations Analyst · Sydney, Australia</p>
+      <p class="bio">I build and measure local AI on AMD hardware, through a data-centre operations lens: power, cost, failure modes, and what an organisation is really buying when it keeps AI in-house. Every number I publish is measured on my own rig and can be rerun.</p>
     </div>
 
-   <script>
-        document.querySelectorAll('.command-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                // Only prevent default if it's a placeholder link (#)
-                if (this.getAttribute('href') === '#') {
-                    e.preventDefault();
-                }
-                
-                this.style.background = '#1c2128';
-                this.style.borderColor = '#ffd700';
-                
-                setTimeout(() => {
-                    this.style.background = '#21262d';
-                    this.style.borderColor = '#30363d';
-                }, 200);
-            });
-        });
-    </script>
+    <p class="prompt"><span class="u">sam@lab</span>:~$ cat findings.txt</p>
+    <div class="out stats">
+      <div class="stat"><div class="n">2.6×</div><div class="l">faster serving after tracing one config line (21.0 → 54.3 tokens/s)</div></div>
+      <div class="stat"><div class="n">A$0.71</div><div class="l">electricity per million tokens generated, 80B model, measured at the wall</div></div>
+      <div class="stat"><div class="n">886 W</div><div class="l">peak wall power reading long prompts across three GPUs</div></div>
+      <div class="stat"><div class="n">~15 yrs</div><div class="l">hardware payback vs renting the same model: local AI is a control decision</div></div>
+    </div>
+
+    <p class="prompt"><span class="u">sam@lab</span>:~$ ls ./projects</p>
+    <ul class="ls out">
+      <li><span aria-hidden="true">📁</span><span><a href="https://github.com/getsamsultan/rdna4-local-ai-lab">rdna4-local-ai-lab</a><span class="desc">Lab notebook for 3× Radeon AI PRO R9700 (96 GB VRAM): findings, method, bench kit and raw data.</span></span></li>
+      <li><span aria-hidden="true">🔧</span><span><a href="https://github.com/getsamsultan/rdna4-local-ai-lab/blob/main/findings/02-hsa-enable-sdma.md">Finding: one line cost 61% of generation speed</a><span class="desc">Nine hypotheses eliminated one by one, down to a single APU-only setting on discrete cards.</span></span></li>
+      <li><span aria-hidden="true">⚡</span><span><a href="https://github.com/getsamsultan/rdna4-local-ai-lab/blob/main/findings/03-power-and-cost.md">Finding: what a local AI rig really costs per token</a><span class="desc">Wall-metered power, cost per million tokens, and hardware payback vs the cloud.</span></span></li>
+      <li><span aria-hidden="true">🧩</span><span><a href="https://github.com/getsamsultan/rdna4-local-ai-lab/blob/main/findings/01-pcie-topology-and-layer-split.md">Finding: PCIe topology and the cost of splitting a model</a><span class="desc">Chipset slot −12%, layer split −7% writing / +50% reading, ~1 ms per hand-off.</span></span></li>
+    </ul>
+
+    <p class="prompt"><span class="u">sam@lab</span>:~$ git log --upstream</p>
+    <ul class="ls out">
+      <li><span class="tag" aria-hidden="true">●</span><span><a href="https://github.com/Osmantic/ODS/issues/7786">Osmantic/ODS #7786</a><span class="desc">HSA_ENABLE_SDMA=0 cuts llama-server generation by ~61% on discrete RDNA4 (gfx1201).</span></span></li>
+      <li><span class="tag" aria-hidden="true">●</span><span><a href="https://github.com/Osmantic/ODS/issues/7787">Osmantic/ODS #7787</a><span class="desc">Discrete RDNA4 setup notes: installer picked the iGPU target, device detection and config fixes.</span></span></li>
+    </ul>
+
+    <p class="prompt"><span class="u">sam@lab</span>:~$ cat now.txt</p>
+    <ul class="ls out">
+      <li><span aria-hidden="true">→</span><span>ROCm 10 side-by-side, and multi-user serving cost</span></li>
+      <li><span aria-hidden="true">→</span><span>Auditing what a "local" AI stack actually sends out</span></li>
+      <li><span aria-hidden="true">→</span><span>Apartment energy monitoring with an ESP32 and a mini EPMS</span></li>
+      <li><span aria-hidden="true">→</span><span>OT security lab: what an unauthenticated industrial protocol looks like on the wire</span></li>
+    </ul>
+
+    <p class="prompt"><span class="u">sam@lab</span>:~$ ls ./links</p>
+    <ul class="ls out">
+      <li><span aria-hidden="true">🐙</span><span><a href="https://github.com/getsamsultan">github.com/getsamsultan</a></span></li>
+    </ul>
+
+    <p class="prompt"><span class="u">sam@lab</span>:~$ <span class="cursor" aria-hidden="true"></span></p>
+  </div>
+</main>
+<footer>Measured on my own hardware. Not affiliated with AMD, ASRock or the ODS project.</footer>
 </body>
 </html>
